@@ -33,6 +33,7 @@
 
 # Visual Studio cache directory
 .vs/
+.env*
 
 # Gradle cache directory
 .gradle/
@@ -97,3 +98,4 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+JSON_KEY_TEMPLATE.json
