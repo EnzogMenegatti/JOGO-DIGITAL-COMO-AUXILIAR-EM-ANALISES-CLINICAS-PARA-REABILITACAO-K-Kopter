@@ -7,8 +7,9 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     
-    [SerializeField] float force = 100f;
+    [SerializeField] float forceUP = 100f;
     [SerializeField] float forceXY = 15f;
+    [SerializeField] float torque = 10f;
     float fuel;
     private Rigidbody2D landerRigidbody2D;
     private FuelController fuelController;
@@ -34,18 +35,20 @@ public class PlayerController : MonoBehaviour
         }
         if (Keyboard.current.upArrowKey.isPressed)//quando tecla pra cima pressionada
         {
-            landerRigidbody2D.AddForce(force * transform.up * Time.deltaTime);//adiciona força pro cima local do foguete
+            landerRigidbody2D.AddForce(forceUP * transform.up * Time.deltaTime);//adiciona força pro cima local do foguete
             onUpForce?.Invoke(this, EventArgs.Empty);//invocação de evento
         }
         if (Keyboard.current.leftArrowKey.isPressed)//quando tecla pra esquerda pressioanda
         {
             landerRigidbody2D.AddForce((forceXY * -1) * transform.right * Time.deltaTime);//adiciona força de rotação pra esquerda
+            landerRigidbody2D.AddTorque(torque * Time.deltaTime);
             onLeftForce?.Invoke(this, EventArgs.Empty);//invoca evento
 
         }
         if (Keyboard.current.rightArrowKey.isPressed)//quando tecla pra direita pressionada
         {
             landerRigidbody2D.AddForce(forceXY * transform.right * Time.deltaTime);//adiciona força de rotação pra direita
+            landerRigidbody2D.AddTorque(torque * -1 * Time.deltaTime);
             onRightForce?.Invoke(this, EventArgs.Empty);//invoca evento
         }
         

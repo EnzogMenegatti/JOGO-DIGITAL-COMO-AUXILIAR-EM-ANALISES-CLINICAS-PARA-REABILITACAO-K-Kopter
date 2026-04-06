@@ -60,11 +60,11 @@
         "*.asset": "yaml",
         "*.meta": "yaml",
         "*.prefab": "yaml",
-        "*.unity": "yaml",
+        "*.unity": "yaml"
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
-        "*.sln": "*.csproj",
+        "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "TCC.sln"
+    "dotnet.defaultSolution": "JOGO-DIGITAL-COMO-AUXILIAR-EM-ANALISES-CLINICAS-PARA-REABILITACAO-K-Kopter.sln"
 }
