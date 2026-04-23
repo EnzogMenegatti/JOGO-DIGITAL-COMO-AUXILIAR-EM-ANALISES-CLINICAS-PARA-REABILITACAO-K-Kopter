@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class CollisionScript : MonoBehaviour
 {
-     private void OnCollisionEnter2D(Collision2D collision2D)//parametro nativo unity pra colisão
-    {
+    int finalScore;
+
+    private void OnCollisionEnter2D(Collision2D collision2D)//parametro nativo unity pra colisão
+    {   
         if (!collision2D.gameObject.TryGetComponent(out Landingpad landingPad))//o parametro checa a classe do objeto colidido, se não tiver o script de Landingpad, é uma batida
         {
             Debug.Log("Crashed");
@@ -28,6 +30,8 @@ public class CollisionScript : MonoBehaviour
 
         Debug.Log("Safe Landing");
 
+
+        
         float ScoreMultiplier = 100f; //Multiplicador do placar geral
         float maxScorelanding = 10; //Valor maximo do placar de pouso
         float scoreLanding = (maxScorelanding - Mathf.Abs(dotVector - 1f) * ScoreMultiplier);//calculo de placar de pouso. Você reduz o valor maximo pelo valor escalar dos dois angulos (nave e ch�o), e multiplica pelo multiplicador base.
@@ -36,7 +40,7 @@ public class CollisionScript : MonoBehaviour
         Debug.Log("Score of landing is: " + scoreLanding);
         Debug.Log("Score of speed is: " + scoreSpeed);
 
-        int finalScore = Mathf.RoundToInt(scoreLanding + scoreSpeed) * landingPad.ReturnScore();//calculo do placar final. Você soma o placar de pouso e velocidade, e multiplica pela fun��o criada no objeto landingPad(returnMultiplier retorna o valor da variaviel privada que dita o valor de multiplicador).
+        finalScore = Mathf.RoundToInt((scoreLanding + scoreSpeed) * landingPad.ReturnScore());//calculo do placar final. Você soma o placar de pouso e velocidade, e multiplica pela fun��o criada no objeto landingPad(returnMultiplier retorna o valor da variaviel privada que dita o valor de multiplicador).
 
         Debug.Log("Final Score is: " + finalScore);
     }

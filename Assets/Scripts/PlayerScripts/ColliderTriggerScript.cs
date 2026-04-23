@@ -1,23 +1,37 @@
 using UnityEngine;
+using System;
 
 public class ColliderTriggerScript : MonoBehaviour
 {
 
+
+
 [SerializeField] private FuelController fuelController;
 
-void Awake()
+
+public event EventHandler<int> onCoinPickUp;//Cria um evento com um parametro
+
+int coinValueHolder;
+    void Awake()
     {
         fuelController = GetComponent<FuelController>();
     }
 
-private void OnTriggerEnter2D(Collider2D collider2D)
+    private void OnTriggerEnter2D(Collider2D collider2D)
     { 
         if(collider2D.gameObject.TryGetComponent(out GasCan gasCan)){
             fuelController.RefuelKopter(gasCan.FuelHold);
             Debug.Log("Refulled");
-            Destroy(gasCan.gameObject);
+            gasCan.DestroySelf();
             return;
         }
+
+        if(collider2D.gameObject.TryGetComponent(out CoinPickUp coinPickUp)){
+            onCoinPickUp?.Invoke(this, coinPickUp.CoinScoreValue);//(Sender, Argumento) sendo This quer dizer que o script está mandando, e coinPickUp.CoinScoreValue é a propriedade de coinPickUp
+            coinPickUp.DestroySelf();
+            return;
+        }
+
     }
     
     

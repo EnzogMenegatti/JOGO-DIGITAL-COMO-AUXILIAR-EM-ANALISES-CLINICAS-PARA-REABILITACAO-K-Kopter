@@ -25,12 +25,12 @@ public class FuelController : MonoBehaviour
 
         if (Fuel <= 0)
         {
-            GetComponent<PlayerController>().enabled = false;
+            GetComponent<LanderController>().enabled = false;
         }
         else
         {
-            GetComponent<PlayerController>().enabled = true;
-            Debug.Log($"{Fuel}");
+            GetComponent<LanderController>().enabled = true;
+            /*Debug.Log($"{Fuel}");*/
         }
     }
     public float RefuelKopter(float newFuel)
