@@ -5,25 +5,30 @@ using UnityEngine;
 
 public class FuelController : MonoBehaviour
 {
-    private float startingfuel = 10f;
-    private float fuel;
 
-    public float Fuel
+    public static FuelController Instance {get; private set;}
+
+    private float startingFuel = 10f;
+    private float fuelMax;
+    private float fuelNormalized;
+
+    public float FuelMax
     {
-        get{return fuel;}
-        set{fuel = (value<0)? 0:value;}
+        get{return fuelMax;}
+        set{fuelMax = (value<0)? 0:value;}
     }
 
-    void Start()
+    private void Awake()
     {
-        fuel = startingfuel;
+        fuelMax = startingFuel;
+        Instance = this;
     }
 
     public void FuelDepletion()
     {
-        Fuel -= 1f * Time.deltaTime;
+        FuelMax -= 1f * Time.deltaTime;
 
-        if (Fuel <= 0)
+        if (FuelMax <= 0)
         {
             LanderController.Instance.enabled = false;
         }
@@ -35,7 +40,24 @@ public class FuelController : MonoBehaviour
     }
     public float RefuelKopter(float newFuel)
     {
-        Fuel += newFuel;
-        return Fuel;
+        if (newFuel > 10)
+        {
+            FuelMax = 10;
+        }
+        else{
+        FuelMax += newFuel;
+        }
+        return FuelMax;
+    }
+
+    public float ReturnFuel()
+    {
+        return fuelMax;
+    }
+
+    public float ReturnFuelNormalized()
+    {
+        fuelNormalized = startingFuel / fuelMax;
+        return fuelNormalized;
     }
 }

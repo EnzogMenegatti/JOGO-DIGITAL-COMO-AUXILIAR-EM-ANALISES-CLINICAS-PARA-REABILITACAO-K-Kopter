@@ -7,6 +7,7 @@ public class ScoreManager : MonoBehaviour
 
     public static ScoreManager Instance {get; private set;}
    
+    float time;
     int score;
     [SerializeField] private ColliderTriggerScript colliderTriggerScript;
     [SerializeField] private CollisionScript collisionScript;
@@ -15,6 +16,12 @@ public class ScoreManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Update()
+    {
+        time += Time.deltaTime;
+        AddScore(Mathf.RoundToInt(Time.deltaTime * 5f));
     }
 
     private void OnEnable()
@@ -48,4 +55,14 @@ public class ScoreManager : MonoBehaviour
     {
         score += addScoreAmmount;
     }
+
+    public int ReturnScore()
+    {
+        return score;
+    } 
+
+    public float ReturnTime()
+    {
+        return time;
+    } 
 }

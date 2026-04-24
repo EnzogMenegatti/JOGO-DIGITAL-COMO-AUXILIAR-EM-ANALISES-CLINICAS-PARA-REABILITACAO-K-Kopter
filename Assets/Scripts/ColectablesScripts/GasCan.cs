@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GasCan : MonoBehaviour
 {
-    [SerializeField] int fuelHold = 400;
+    [SerializeField] int fuelHold = 100;
     
 public void DestroySelf()
     {

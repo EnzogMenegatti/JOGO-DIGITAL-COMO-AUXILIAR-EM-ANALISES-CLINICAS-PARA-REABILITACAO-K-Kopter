@@ -1,14 +1,22 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
 public class CollisionScript : MonoBehaviour
 {
     int finalScore;
+
+    public static CollisionScript Instance {get; private set;}
     public event EventHandler<OnLandedEventArgs> onLanded;//Cria evento quando uma aterriçagem acontecer
     public class OnLandedEventArgs : EventArgs//cria uma classe que herda/extend o generico de EventArgs, podendo criar um "array" de novos argumentos em um Invoke
     {
         public int score;//Vai carregar o valor de escore da aterriçagem
+    }
+
+    private void Awake()
+    {
+        Instance = this;
     }
 
     private void OnCollisionEnter2D(Collision2D collision2D)//parametro nativo unity pra colisão
