@@ -59,8 +59,8 @@ Assets/
   Landingpad.cs
   LandingpadVisual.cs
  Scripts/Managers/
-  GameManager.cs
   ManagerAPI.cs
+  ScoreManager.cs
  Scripts/PlayerScripts/
   ColliderTriggerScript.cs
   CollisionScript.cs

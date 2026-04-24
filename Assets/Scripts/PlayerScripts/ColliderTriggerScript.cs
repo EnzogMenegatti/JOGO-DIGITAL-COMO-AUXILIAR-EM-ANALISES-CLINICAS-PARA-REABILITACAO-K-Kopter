@@ -9,7 +9,11 @@ public class ColliderTriggerScript : MonoBehaviour
 [SerializeField] private FuelController fuelController;
 
 
-public event EventHandler<int> onCoinPickUp;//Cria um evento com um parametro
+public event EventHandler<OnCoinPickUpEventArgs> onCoinPickUp;//Cria um evento com um parametro
+public class OnCoinPickUpEventArgs : EventArgs//cria uma classe que herda/extend o generico de EventArgs, podendo criar um "array" de novos argumentos em um Invoke
+    {
+        public int coinValue;//Vai carregar o valor de escore da aterriçagem
+    }
 
 int coinValueHolder;
     void Awake()
@@ -27,7 +31,10 @@ int coinValueHolder;
         }
 
         if(collider2D.gameObject.TryGetComponent(out CoinPickUp coinPickUp)){
-            onCoinPickUp?.Invoke(this, coinPickUp.CoinScoreValue);//(Sender, Argumento) sendo This quer dizer que o script está mandando, e coinPickUp.CoinScoreValue é a propriedade de coinPickUp
+            onCoinPickUp?.Invoke(this, new OnCoinPickUpEventArgs
+            {
+                coinValue = coinPickUp.CoinScoreValue,
+            });//(Sender, Argumento) sendo This quer dizer que o script está mandando, e coinPickUp.CoinScoreValue é a propriedade de coinPickUp
             coinPickUp.DestroySelf();
             return;
         }

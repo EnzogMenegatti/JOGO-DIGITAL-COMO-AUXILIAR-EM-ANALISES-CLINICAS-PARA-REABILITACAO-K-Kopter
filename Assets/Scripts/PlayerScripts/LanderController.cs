@@ -6,25 +6,24 @@ using UnityEngine.InputSystem;
 
 public class LanderController : MonoBehaviour
 {
-    
+    public static LanderController Instance {get; private set;}//Singleton, estou definindo que essa classe é estatica (Não existe instancias dela, apenas ela) e estanciando ela dentro da propria classe uma unica vez
     [SerializeField] float force = 100f;
     [SerializeField] float forceXY = 15f;
-    [SerializeField] float fuel;
     [SerializeField] private Rigidbody2D landerRigidbody2D;
     [SerializeField] private FuelController fuelController;
     [SerializeField] private ManagerAPI managerAPI;
-    
-    private void Awake()
-    {
-        landerRigidbody2D = GetComponent<Rigidbody2D>();
-        fuelController = GetComponent<FuelController>();
-        managerAPI = GetComponent<ManagerAPI>();
-    }
 
     public event EventHandler onUpForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
     public event EventHandler onLeftForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
     public event EventHandler onRightForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento seguro
-
+    
+    private void Awake()
+    {
+        Instance = this;
+        landerRigidbody2D = GetComponent<Rigidbody2D>();
+        fuelController = GetComponent<FuelController>();
+        managerAPI = GetComponent<ManagerAPI>();
+    }
 
     private void FixedUpdate()
     {

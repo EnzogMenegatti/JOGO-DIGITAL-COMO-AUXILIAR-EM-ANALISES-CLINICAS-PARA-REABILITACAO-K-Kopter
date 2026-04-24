@@ -25,11 +25,11 @@ public class FuelController : MonoBehaviour
 
         if (Fuel <= 0)
         {
-            GetComponent<LanderController>().enabled = false;
+            LanderController.Instance.enabled = false;
         }
         else
         {
-            GetComponent<LanderController>().enabled = true;
+            LanderController.Instance.enabled = true;
             /*Debug.Log($"{Fuel}");*/
         }
     }

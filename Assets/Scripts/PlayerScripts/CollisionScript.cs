@@ -1,8 +1,15 @@
+using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class CollisionScript : MonoBehaviour
 {
     int finalScore;
+    public event EventHandler<OnLandedEventArgs> onLanded;//Cria evento quando uma aterriçagem acontecer
+    public class OnLandedEventArgs : EventArgs//cria uma classe que herda/extend o generico de EventArgs, podendo criar um "array" de novos argumentos em um Invoke
+    {
+        public int score;//Vai carregar o valor de escore da aterriçagem
+    }
 
     private void OnCollisionEnter2D(Collision2D collision2D)//parametro nativo unity pra colisão
     {   
@@ -37,11 +44,13 @@ public class CollisionScript : MonoBehaviour
         float scoreLanding = (maxScorelanding - Mathf.Abs(dotVector - 1f) * ScoreMultiplier);//calculo de placar de pouso. Você reduz o valor maximo pelo valor escalar dos dois angulos (nave e ch�o), e multiplica pelo multiplicador base.
         float scoreSpeed = ((softLandingVelocityMagnitude - relativeVelocityMagnitude) * ScoreMultiplier);//calculo de placar de velocidade. Voce reduz o valor definido para um pouso suave pelo valor real da for�a de velocidade da nave, e multiplica pelo valor base.
 
-        Debug.Log("Score of landing is: " + scoreLanding);
-        Debug.Log("Score of speed is: " + scoreSpeed);
+        /*Debug.Log("Score of landing is: " + scoreLanding);
+        Debug.Log("Score of speed is: " + scoreSpeed);*/
 
         finalScore = Mathf.RoundToInt((scoreLanding + scoreSpeed) * landingPad.ReturnScore());//calculo do placar final. Você soma o placar de pouso e velocidade, e multiplica pela fun��o criada no objeto landingPad(returnMultiplier retorna o valor da variaviel privada que dita o valor de multiplicador).
-
-        Debug.Log("Final Score is: " + finalScore);
+        onLanded?.Invoke(this, new OnLandedEventArgs//(sender = objeto que envia, Arguments = nova classe de argumentos, que aqui será o argumento score recebendo o valor finalScore da classe)
+        {
+            score = finalScore,
+        });
     }
 }
