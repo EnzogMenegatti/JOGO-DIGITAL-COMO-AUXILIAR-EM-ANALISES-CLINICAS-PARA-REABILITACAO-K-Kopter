@@ -32,7 +32,7 @@ public class ScoreManager : MonoBehaviour
 
     private void OnDisable()
     {
-        // Always unsubscribe to prevent memory leaks/errors when objects are destroyed
+        
         colliderTriggerScript.onCoinPickUp -= Collider_onCoinPickup;
         collisionScript.onLanded -= Collision_onLanded;
     }
@@ -58,7 +58,7 @@ public class ScoreManager : MonoBehaviour
 
     public int ReturnScore()
     {
-        return score;
+        return score + CollisionScript.Instance.FinalScore();
     } 
 
     public float ReturnTime()

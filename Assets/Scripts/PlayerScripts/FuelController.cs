@@ -8,56 +8,48 @@ public class FuelController : MonoBehaviour
 
     public static FuelController Instance {get; private set;}
 
-    private float startingFuel = 10f;
-    private float fuelMax;
+
+    private float maxFuel = 10f;
+    private float startingFuel = 4f;
+    private float currentFuel;
     private float fuelNormalized;
 
-    public float FuelMax
+    public float CurrentFuel
     {
-        get{return fuelMax;}
-        set{fuelMax = (value<0)? 0:value;}
+        get => currentFuel;
+        set => currentFuel = Mathf.Clamp(value, 0, maxFuel);
     }
 
     private void Awake()
-    {
-        fuelMax = startingFuel;
+    {   
         Instance = this;
+        currentFuel = startingFuel;
+    }
+
+    void FixedUpdate()
+    {
+        
     }
 
     public void FuelDepletion()
     {
-        FuelMax -= 1f * Time.deltaTime;
-
-        if (FuelMax <= 0)
-        {
-            LanderController.Instance.enabled = false;
-        }
-        else
-        {
-            LanderController.Instance.enabled = true;
-            /*Debug.Log($"{Fuel}");*/
-        }
+        CurrentFuel -= 1f * Time.deltaTime;
+        
     }
     public float RefuelKopter(float newFuel)
     {
-        if (newFuel > 10)
-        {
-            FuelMax = 10;
-        }
-        else{
-        FuelMax += newFuel;
-        }
-        return FuelMax;
+        CurrentFuel += newFuel;
+        return CurrentFuel;
     }
 
     public float ReturnFuel()
     {
-        return fuelMax;
+        return CurrentFuel;
     }
 
     public float ReturnFuelNormalized()
     {
-        fuelNormalized = startingFuel / fuelMax;
+        fuelNormalized = CurrentFuel / startingFuel;
         return fuelNormalized;
     }
 }
