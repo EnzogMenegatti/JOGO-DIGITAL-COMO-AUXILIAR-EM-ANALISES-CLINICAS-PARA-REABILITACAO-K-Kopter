@@ -58,7 +58,7 @@ public class ScoreManager : MonoBehaviour
 
     public int ReturnScore()
     {
-        return score + CollisionScript.Instance.FinalScore();
+        return score;
     } 
 
     public float ReturnTime()
