@@ -50,6 +50,9 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 /warnaserror+:NU1605
 
 [sourceFiles]
+Assets/Firebase/FirebaseApp/Internal/
+ FirebaseInterops.cs
+ HttpHelpers.cs
 Assets/
  GeminiManager/Scripts/UnityAndGeminiV3.cs
  Scripts/ColectablesScripts/
@@ -59,16 +62,18 @@ Assets/
   Landingpad.cs
   LandingpadVisual.cs
  Scripts/Managers/
+  AuthManager.cs
   ManagerAPI.cs
   ScoreManager.cs
+  UiManagers/
+   LandedUi.cs
+   LoginUiManager.cs
+   StatsUi.cs
  Scripts/PlayerScripts/
   ColliderTriggerScript.cs
   CollisionScript.cs
   FuelController.cs
   LanderController.cs
- Scripts/UiScripts/
-  LandedUi.cs
-  StatsUi.cs
 Temp/obj/Assembly-CSharp/.NETStandard,Version=v2.1.AssemblyAttributes.cs
 
 [metadataReferences]
@@ -320,6 +325,15 @@ Temp/obj/Assembly-CSharp/.NETStandard,Version=v2.1.AssemblyAttributes.cs
 ../../../../../Program Files/Unity/Hub/Editor/6000.2.7f2/Editor/Data/NetStandard/
  Extensions/2.0.0/System.Runtime.InteropServices.WindowsRuntime.dll
  ref/2.1.0/netstandard.dll
+../../../../../Program Files/Unity/Hub/Editor/6000.2.7f2/Editor/Data/PlaybackEngines/AndroidPlayer/
+ Unity.Android.Gradle.dll
+ Unity.Android.Types.dll
+Assets/Firebase/Plugins/
+ Firebase.App.dll
+ Firebase.Auth.dll
+ Firebase.Platform.dll
+ Firebase.TaskExtension.dll
+ Google.MiniJson.dll
 Library/PackageCache/com.unity.collections@d49facba0036/
  Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll
  Unity.Collections.Tests/System.IO.Hashing/System.IO.Hashing.dll

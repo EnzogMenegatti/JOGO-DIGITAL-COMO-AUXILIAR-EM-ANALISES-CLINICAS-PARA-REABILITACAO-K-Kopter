@@ -99,3 +99,5 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 JSON_KEY_TEMPLATE.json
+FirebaseCppApp-13_10_0.bundle
+FirebaseCppApp-13_10_0.so
