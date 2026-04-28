@@ -16,35 +16,41 @@ public class LanderController : MonoBehaviour
     [SerializeField] private FuelController fuelController;
     [SerializeField] private ManagerAPI managerAPI;
     [SerializeField] private float facing;
-
-    private PlayerState state;
-    private enum PlayerState
+    
+    public event EventHandler onUpForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
+    public event EventHandler onLeftForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
+    public event EventHandler onRightForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento seguro
+    public event EventHandler<onStateChangedEventArgs> onStateChanged;
+    public class onStateChangedEventArgs : EventArgs
+    {
+        public PlayerState state;
+    }
+    private PlayerState playerState;
+    public enum PlayerState
     {
         WaitingForStart,
         Start,
     }
-   
-    public event EventHandler onUpForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
-    public event EventHandler onLeftForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
-    public event EventHandler onRightForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento seguro
-    
     private void Awake()
     {   
         Instance = this;
         landerRigidbody2D = GetComponent<Rigidbody2D>();
         fuelController = GetComponent<FuelController>();
         managerAPI = GetComponent<ManagerAPI>();
-        state = PlayerState.WaitingForStart;
+        playerState = PlayerState.WaitingForStart;
     }
 
     private void FixedUpdate(){
-        switch(state){
+        switch(playerState){
             default:
             case PlayerState.WaitingForStart:
                 if(Keyboard.current.upArrowKey.isPressed || Keyboard.current.leftArrowKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
                 {
                     this.landerRigidbody2D.gravityScale = GRAVITY_SCALE;
-                    state = PlayerState.Start;
+                    playerState = PlayerState.Start;
+                    onStateChanged?.Invoke(this, new onStateChangedEventArgs{
+                    state = playerState,
+                    });
                 }
             break;
             case PlayerState.Start:

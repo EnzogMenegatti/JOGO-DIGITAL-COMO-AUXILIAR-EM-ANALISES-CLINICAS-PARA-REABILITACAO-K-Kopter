@@ -9,6 +9,7 @@ public class ScoreManager : MonoBehaviour
    
     float time;
     int score;
+    bool isTimeEnable;
     [SerializeField] private ColliderTriggerScript colliderTriggerScript;
     [SerializeField] private CollisionScript collisionScript;
 
@@ -20,7 +21,9 @@ public class ScoreManager : MonoBehaviour
 
     private void Update()
     {
+        if(isTimeEnable){
         time += Time.deltaTime;
+        }
         AddScore(Mathf.RoundToInt(Time.deltaTime * 5f));
     }
 
@@ -28,13 +31,19 @@ public class ScoreManager : MonoBehaviour
     {
         colliderTriggerScript.onCoinPickUp += Collider_onCoinPickup;//Toda vez que onCoinPickUp acontecer, triggara o método de mesmo nome
         collisionScript.onLanded += Collision_onLanded;
+        LanderController.Instance.onStateChanged += Lander_onStateChanged;
     }
 
     private void OnDisable()
     {
-        
         colliderTriggerScript.onCoinPickUp -= Collider_onCoinPickup;
         collisionScript.onLanded -= Collision_onLanded;
+        LanderController.Instance.onStateChanged -= Lander_onStateChanged;
+    }
+
+
+    public void Lander_onStateChanged(object sender, LanderController.onStateChangedEventArgs e){
+        isTimeEnable = e.state == LanderController.PlayerState.Start;
     }
 
     public void Collider_onCoinPickup(object sender, ColliderTriggerScript.OnCoinPickUpEventArgs e)//recebe os dois parametros do invocador de evento;
