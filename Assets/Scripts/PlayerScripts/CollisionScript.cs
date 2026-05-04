@@ -5,8 +5,9 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class CollisionScript : MonoBehaviour
 {
-    [SerializeField]int finalScore;
+    int finalScore;
     [SerializeField]private GameObject vfxExplosion;
+
     public static CollisionScript Instance {get; private set;}
     public event EventHandler<OnLandedEventArgs> onLanded;//Cria evento quando uma aterriçagem acontecer
     public class OnLandedEventArgs : EventArgs{//cria uma classe que herda/extend o generico de EventArgs, podendo criar um "array" de novos argumentos em um Invoke

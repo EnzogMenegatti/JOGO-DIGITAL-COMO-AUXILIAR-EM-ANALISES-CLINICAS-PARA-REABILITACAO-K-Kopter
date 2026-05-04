@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.UIElements;
+using UnityEditor.SearchService;
+using UnityEngine.SceneManagement;
 
 
 public class LandedUi : MonoBehaviour
@@ -9,12 +11,21 @@ public class LandedUi : MonoBehaviour
 
 [SerializeField] private TextMeshProUGUI labelTextMesh;
 [SerializeField] private TextMeshProUGUI scoreTextMesh;
+[SerializeField] private UnityEngine.UI.Button RestartButton;
 
 
     void Start()
     {   
         CollisionScript.Instance.onLanded += Collision_onLanded;
         Hide();
+    }
+
+    private void Awake()
+    {
+        RestartButton.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene(0);   
+        });
     }
 
     public void Collision_onLanded(object sender, CollisionScript.OnLandedEventArgs e)//recebe os parametros do invocador de evento;

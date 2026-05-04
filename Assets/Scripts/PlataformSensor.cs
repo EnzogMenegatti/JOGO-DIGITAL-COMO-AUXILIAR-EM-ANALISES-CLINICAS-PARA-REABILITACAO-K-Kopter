@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public class LerSensor : MonoBehaviour
 {
 
-    public string PortJog = "COM14";
+    public string PortJog = "COM18";
 
     public int BaudJog = 115200;
 
