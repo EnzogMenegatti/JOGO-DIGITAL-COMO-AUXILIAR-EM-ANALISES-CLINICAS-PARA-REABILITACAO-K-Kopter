@@ -5,37 +5,51 @@ using UnityEngine;
 
 public class FuelController : MonoBehaviour
 {
-    private float startingfuel = 10f;
-    private float fuel;
 
-    public float Fuel
+    public static FuelController Instance {get; private set;}
+
+
+    private float maxFuel = 10f;
+    private float startingFuel = 4f;
+    private float currentFuel;
+    private float fuelNormalized;
+
+    public float CurrentFuel
     {
-        get{return fuel;}
-        set{fuel = (value<0)? 0:value;}
+        get => currentFuel;
+        set => currentFuel = Mathf.Clamp(value, 0, maxFuel);
     }
 
-    void Start()
+    private void Awake()
+    {   
+        Instance = this;
+        currentFuel = startingFuel;
+    }
+
+    void FixedUpdate()
     {
-        fuel = startingfuel;
+        
     }
 
     public void FuelDepletion()
     {
-        Fuel -= 1f * Time.deltaTime;
-
-        if (Fuel <= 0)
-        {
-            GetComponent<PlayerController>().enabled = false;
-        }
-        else
-        {
-            GetComponent<PlayerController>().enabled = true;
-            Debug.Log($"{Fuel}");
-        }
+        CurrentFuel -= 1f * Time.deltaTime;
+        
     }
     public float RefuelKopter(float newFuel)
     {
-        Fuel += newFuel;
-        return Fuel;
+        CurrentFuel += newFuel;
+        return CurrentFuel;
+    }
+
+    public float ReturnFuel()
+    {
+        return CurrentFuel;
+    }
+
+    public float ReturnFuelNormalized()
+    {
+        fuelNormalized = CurrentFuel / startingFuel;
+        return fuelNormalized;
     }
 }

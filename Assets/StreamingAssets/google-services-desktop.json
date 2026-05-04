@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "171256250287",
+    "project_id": "tcckopter",
+    "storage_bucket": "tcckopter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171256250287:android:b7bd9c4fdd3ed6f6db795a",
+        "android_client_info": {
+          "package_name": "com.EGM.Kopter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKlp37Pu6kygFc9l05K6R1dSfm9mp_Bqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
