@@ -1731,7 +1731,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollisionScript
   finalScore: 0
-  vfxExplosion: {fileID: 67900307044645530, guid: 6bdc9dde2830171429554cbe1431eb55, type: 3}
+  vfxExplosion: {fileID: 570857052369263401, guid: 74984eaff43986544b24456eb565f19a, type: 3}
 --- !u!114 &369356414
 MonoBehaviour:
   m_ObjectHideFlags: 0
