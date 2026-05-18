@@ -22,10 +22,6 @@ public class LandedUi : MonoBehaviour
 
     private void Awake()
     {
-        RestartButton.onClick.AddListener(() =>
-        {
-            SceneManager.LoadScene(0);   
-        });
     }
 
     public void Collision_onLanded(object sender, CollisionScript.OnLandedEventArgs e)//recebe os parametros do invocador de evento;
