@@ -7,8 +7,9 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     //Screen object variables
-    public GameObject loginUI;
-    public GameObject registerUI;
+    [SerializeField] GameObject loginUI;
+    [SerializeField] GameObject registerUI;
+    [SerializeField] GameObject userDataUi;
 
     private void Awake()
     {
@@ -18,22 +19,29 @@ public class UIManager : MonoBehaviour
         }
         else if (instance != null)
         {
-            Debug.Log("Instance already exists, destroying object!");
+            Debug.Log("Instancia já existe, destruindo objeto!");
             Destroy(this);
         }
     }
 
-    //Functions to change the login screen UI
-    public void LoginScreen() //Back button
+    public void LoginScreen()
     {
         loginUI.SetActive(true);
         registerUI.SetActive(false);
     }
-    public void RegisterScreen() // Regester button
+    public void RegisterScreen()
     {
         loginUI.SetActive(false);
         registerUI.SetActive(true);
     }
+
+    public void UserDataScreen()
+    {
+        userDataUi.SetActive(true);
+        loginUI.SetActive(false);
+        registerUI.SetActive(false);
+    }
+
     public void CloseScreen()
     {
         loginUI.SetActive(false);
