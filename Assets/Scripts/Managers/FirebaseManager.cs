@@ -52,14 +52,14 @@ void Awake()
         }
         else
         {
-            Debug.LogError("Could not resolve all Firebase dependencies: " + dependencyStatus);
+            UnityEngine.Debug.LogError("Could not resolve all Firebase dependencies: " + dependencyStatus);
         }
     });
 }
 
 private void InitializeFirebase()
 {
-    Debug.Log("Setting up Firebase Auth");
+    UnityEngine.Debug.Log("Setting up Firebase Auth");
     auth = FirebaseAuth.DefaultInstance;
     DBreference = FirebaseDatabase.DefaultInstance.RootReference;
 }
@@ -105,7 +105,7 @@ public void SaveDataButton()
     StartCoroutine(UpdateUsernameDatabase(pacientName.text));
     StartCoroutine(UpdateAgeDatabase(int.Parse(pacientAge.text)));
     StartCoroutine(UpdateUserHeightDatabase(float.Parse(pacientHeight.text)));
-    StartCoroutine(UpdateUserWeightDatabase(float.Parse(pacientWeight.text)));
+    StartCoroutine(UpdateUserWeightDatabase(int.Parse(pacientWeight.text)));
 }
 
 
@@ -120,7 +120,7 @@ private IEnumerator Login(string _email, string _password)
 
     if (LoginTask.Exception != null)
     {
-        Debug.LogWarning(message: $"Failed to register task with {LoginTask.Exception}");
+        UnityEngine.Debug.LogWarning(message: $"Failed to register task with {LoginTask.Exception}");
         FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
         AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
 
@@ -150,7 +150,7 @@ private IEnumerator Login(string _email, string _password)
     if (LoginTask.Result != null && LoginTask.Result.User != null)
 {
     User = LoginTask.Result.User;
-    Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
+    UnityEngine.Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
         
     if (warningLoginText != null) warningLoginText.text = "";
     if (confirmLoginText != null) confirmLoginText.text = "Logged In";
@@ -168,7 +168,7 @@ private IEnumerator Login(string _email, string _password)
 }
 else
 {
-    Debug.LogError("Login successful but User object is null!");
+    UnityEngine.Debug.LogError("Login successful but User object is null!");
 }
     }
 }
@@ -191,7 +191,7 @@ private IEnumerator Register(string _email, string _password, string _username)
 
         if (RegisterTask.Exception != null)
         {
-            Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
+            UnityEngine.Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
             FirebaseException firebaseEx = RegisterTask.Exception.GetBaseException() as FirebaseException;
             AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
 
@@ -227,7 +227,7 @@ private IEnumerator Register(string _email, string _password, string _username)
 
                 if (ProfileTask.Exception != null)
                 {
-                    Debug.LogWarning(message: $"Failed to register task with {ProfileTask.Exception}");
+                    UnityEngine.Debug.LogWarning(message: $"Failed to register task with {ProfileTask.Exception}");
                     FirebaseException firebaseEx = ProfileTask.Exception.GetBaseException() as FirebaseException;
                     AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
                     warningRegisterText.text = "Username Set Failed!";
@@ -253,71 +253,71 @@ private IEnumerator UpdateUsernameAuth(string _username)
 
     if (ProfileTask.Exception != null)
     {
-        Debug.LogWarning(message: $"Falha em registrar tarefa com {ProfileTask.Exception}");
+        UnityEngine.Debug.LogWarning(message: $"Falha em registrar tarefa com {ProfileTask.Exception}");
     }
     else
     {
-        Debug.LogWarning(message: "Username Atualizado");
+        UnityEngine.Debug.LogWarning(message: "Username Atualizado");
     }
 }
     private IEnumerator UpdateUsernameDatabase(string _username) {
     
-        var DBTask = DBreference.Child("users").Child(UserAuthorization.UserId).Child("username").SetValueAsync(_username);
+        var DBTask = DBreference.Child("users").Child(User.UserId).Child("username").SetValueAsync(_username);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
         if (DBTask != null)
         {
-            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+            UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
         else
         {
-            Debug.LogWarning(message: "Username no banco de dados Atualizado");
+            UnityEngine.Debug.LogWarning(message: "Username no banco de dados Atualizado");
         }
     }
     private IEnumerator UpdateAgeDatabase(int _age) {
     
-        var DBTask = DBreference.Child("users").Child(UserAuthorization.UserId).Child("age").SetValueAsync(_age);
+        var DBTask = DBreference.Child("users").Child(User.UserId).Child("age").SetValueAsync(_age);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
         if (DBTask != null)
         {
-            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+            UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
         else
         {
-            Debug.LogWarning(message: "Username no banco de dados Atualizado");
+            UnityEngine.Debug.LogWarning(message: "Username no banco de dados Atualizado");
         }
     }
     private IEnumerator UpdateUserHeightDatabase(float _height) {
     
-        var DBTask = DBreference.Child("users").Child(UserAuthorization.UserId).Child("height").SetValueAsync(_height);
+        var DBTask = DBreference.Child("users").Child(User.UserId).Child("height").SetValueAsync(_height);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
         if (DBTask != null)
         {
-            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+            UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
         else
         {
-            Debug.LogWarning(message: "Username no banco de dados Atualizado");
+            UnityEngine.Debug.LogWarning(message: "Username no banco de dados Atualizado");
         }
     }
-    private IEnumerator UpdateUserWeightDatabase(string _weight) {
+    private IEnumerator UpdateUserWeightDatabase(int _weight) {
     
-        var DBTask = DBreference.Child("users").Child(UserAuthorization.UserId).Child("weight").SetValueAsync(_weight);
+        var DBTask = DBreference.Child("users").Child(User.UserId).Child("weight").SetValueAsync(_weight);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
         if (DBTask != null)
         {
-            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+            UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
         else
         {
-            Debug.LogWarning(message: "Username no banco de dados Atualizado");
+            UnityEngine.Debug.LogWarning(message: "Username no banco de dados Atualizado");
         }
     }
 }
