@@ -5,6 +5,7 @@ using Firebase.Auth;
 using TMPro;
 using System.Threading.Tasks;
 using Firebase.Database;
+using UnityEngine.UI;
 using System.ComponentModel;
 using System;
 using System.Diagnostics;
@@ -18,24 +19,29 @@ public FirebaseUser User;
 public DatabaseReference DBreference;
 
 [Header("Login")]
+public Button loginButton;
 public TMP_InputField emailLoginField;
 public TMP_InputField passwordLoginField;
 public TMP_Text warningLoginText;
 public TMP_Text confirmLoginText;
 
+
 [Header("Register")]
+public Button registerButton;
 public TMP_InputField usernameRegisterField;
 public TMP_InputField emailRegisterField;
 public TMP_InputField passwordRegisterField;
 public TMP_InputField passwordRegisterVerifyField;
 public TMP_Text warningRegisterText;
+public TMP_Text confirmRegisterText;
 
 [Header ("Medical History")]
 public TMP_InputField pacientName;
-public TMP_InputField pacientSex;
+public TMP_Dropdown pacientSex;
 public TMP_InputField pacientAge;
 public TMP_InputField pacientHeight;
 public TMP_InputField pacientWeight;
+public TMP_InputField pacientNotes;
 public TMP_InputField scoreField;
 public GameObject scoreElement;
 public Transform scoreboardContent;
@@ -81,7 +87,15 @@ public void ClearRegisterField()
 
 public void LoginButton()
 {
-    StartCoroutine(Login(emailLoginField.text, passwordLoginField.text));
+    if(auth == null)
+        {
+            warningLoginText.text = "Inicializando sistema. Aguarde...";
+        }
+
+        if(loginButton != null)
+        loginButton.interactable = false;
+        StartCoroutine(Login(emailLoginField.text, passwordLoginField.text));
+    
 }
 //Function for the register button
 public void RegisterButton()
@@ -118,7 +132,14 @@ private IEnumerator Login(string _email, string _password)
     Task<AuthResult> LoginTask = auth.SignInWithEmailAndPasswordAsync(_email, _password);
     yield return new WaitUntil(predicate: () => LoginTask.IsCompleted);
 
-    if (LoginTask.Exception != null)
+    if (LoginTask.IsCanceled)
+    {
+        if (loginButton != null) loginButton.interactable = true;
+        warningLoginText.text = "Login cancelado (Verifique a conexão).";
+        yield break;
+    }
+
+    if (LoginTask.IsFaulted)
     {
         UnityEngine.Debug.LogWarning(message: $"Failed to register task with {LoginTask.Exception}");
         FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
@@ -143,9 +164,11 @@ private IEnumerator Login(string _email, string _password)
                 message = "Account does not exist";
                 break;
         }
+        if (loginButton != null) loginButton.interactable = true;
         warningLoginText.text = message;
+        yield break;
     }
-    else
+    
     {
     if (LoginTask.Result != null && LoginTask.Result.User != null)
 {
@@ -189,7 +212,14 @@ private IEnumerator Register(string _email, string _password, string _username)
         Task<AuthResult> RegisterTask = auth.CreateUserWithEmailAndPasswordAsync(_email, _password);
         yield return new WaitUntil(predicate: () => RegisterTask.IsCompleted);
 
-        if (RegisterTask.Exception != null)
+        if (RegisterTask.IsCanceled)
+        {
+            if (registerButton != null) registerButton.interactable = true;
+            warningLoginText.text = "Cadastro Cancelado (Verifique a conexão).";
+            yield break;
+        }
+
+        if (RegisterTask.IsFaulted)
         {
             UnityEngine.Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
             FirebaseException firebaseEx = RegisterTask.Exception.GetBaseException() as FirebaseException;
@@ -211,6 +241,7 @@ private IEnumerator Register(string _email, string _password, string _username)
                     message = "Email Already In Use";
                     break;
             }
+            if (registerButton != null) registerButton.interactable = true;
             warningRegisterText.text = message;
         }
         else
@@ -235,7 +266,7 @@ private IEnumerator Register(string _email, string _password, string _username)
                 else
                 {
                     UIManager.instance.LoginScreen();
-                    warningRegisterText.text = "";
+                    confirmRegisterText.text = "Cadastro Bem sucedido";
                     ClearLoginField();
                     ClearRegisterField();
                 }
@@ -266,7 +297,7 @@ private IEnumerator UpdateUsernameAuth(string _username)
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
-        if (DBTask != null)
+        if (DBTask.Exception != null)
         {
             UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
@@ -296,7 +327,7 @@ private IEnumerator UpdateUsernameAuth(string _username)
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
-        if (DBTask != null)
+        if (DBTask.Exception != null)
         {
             UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
@@ -311,7 +342,7 @@ private IEnumerator UpdateUsernameAuth(string _username)
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
-        if (DBTask != null)
+        if (DBTask.Exception != null)
         {
             UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }

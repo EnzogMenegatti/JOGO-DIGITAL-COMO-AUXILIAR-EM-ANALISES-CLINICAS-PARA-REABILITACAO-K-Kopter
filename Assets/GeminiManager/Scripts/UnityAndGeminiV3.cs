@@ -84,8 +84,8 @@ public class UnityAndGeminiV3 : MonoBehaviour
     [Header("JSON API Configuration")]
     public TextAsset jsonApi;
 
+    private const string modelName = "gemini-3.5-flash";
     private string apiKey = ""; 
-    private string apiEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent";
 
     [Header("ChatBot Function")]
     public TMP_InputField inputField;
@@ -112,29 +112,12 @@ public class UnityAndGeminiV3 : MonoBehaviour
     // Protection against HTTP 429 (Too Many Requests)
     private bool isRequesting = false;
 
-    public string GetMimeTypeString()
-    {
-        switch (mimeType)
-        {
-            case MediaType.Video_MP4: return "video/mp4";
-            case MediaType.Audio_MP3: return "audio/mp3";
-            case MediaType.PDF: return "application/pdf";
-            case MediaType.JPG: return "image/jpeg";
-            case MediaType.PNG: return "image/png";
-            default: return "error";
-        }
-    }
-
     void Start()
     {
         if (jsonApi == null) { Debug.LogError("Please assign the JSON API TextAsset!"); return; }
-        
         UnityAndGeminiKey jsonApiKey = JsonUtility.FromJson<UnityAndGeminiKey>(jsonApi.text);
-        apiKey = jsonApiKey.key;   
-
-        // We use Coroutines. If both are filled, they will now wait for each other.
+        apiKey = jsonApiKey.key;
         if (prompt != "") { StartCoroutine(SendPromptRequestToGemini(prompt)); }
-        if (mediaPrompt != "" && mediaFilePath != "") { StartCoroutine(SendPromptMediaRequestToGemini(mediaPrompt, mediaFilePath)); }
     }
 
     // Helper to queue requests
@@ -150,8 +133,7 @@ public class UnityAndGeminiV3 : MonoBehaviour
     {
         yield return StartCoroutine(WaitUntilReady());
         isRequesting = true;
-
-        string url = $"{apiEndpoint}?key={apiKey}";
+        string url = $"https://generativelanguage.googleapis.com/v1beta/models/{modelName}:generateContent?key={apiKey}";
         // Fixed: Removed the extra curly braces that were wrapping the prompt string
         string jsonData = "{\"contents\": [{\"parts\": [{\"text\": \"" + promptText + "\"}]}]}";
         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonData);
@@ -195,8 +177,7 @@ public class UnityAndGeminiV3 : MonoBehaviour
         yield return StartCoroutine(WaitUntilReady());
         isRequesting = true;
 
-        string url = $"{apiEndpoint}?key={apiKey}";
-     
+        string url = $"https://generativelanguage.googleapis.com/v1beta/models/{modelName}:generateContent?key={apiKey}";     
         TextContent userContent = new TextContent {
             role = "user",
             parts = new TextPart[] { new TextPart { text = newMessage } }
@@ -242,48 +223,6 @@ public class UnityAndGeminiV3 : MonoBehaviour
                 }
              }
         }  
-        isRequesting = false;
-    }
-
-    private IEnumerator SendPromptMediaRequestToGemini(string promptText, string mediaPath)
-    {
-        yield return StartCoroutine(WaitUntilReady());
-        isRequesting = true;
-
-        if (!File.Exists(mediaPath))
-        {
-            Debug.LogError("File not found at: " + mediaPath);
-            isRequesting = false;
-            yield break;
-        }
-
-        byte[] mediaBytes = File.ReadAllBytes(mediaPath);
-        string base64Media = System.Convert.ToBase64String(mediaBytes);
-        string url = $"{apiEndpoint}?key={apiKey}";
-        string mimeTypeMedia = GetMimeTypeString();
-
-        string jsonBody = "{\"contents\": [{\"parts\": [{\"text\": \"" + promptText + "\"}, {\"inline_data\": {\"mime_type\": \"" + mimeTypeMedia + "\", \"data\": \"" + base64Media + "\"}}]}]}";
-        byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonBody);
-
-        using (UnityWebRequest www = new UnityWebRequest(url, "POST"))
-        {
-            www.uploadHandler = new UploadHandlerRaw(jsonToSend);
-            www.downloadHandler = new DownloadHandlerBuffer();
-            www.SetRequestHeader("Content-Type", "application/json");
-
-            yield return www.SendWebRequest();
-
-            if (www.result != UnityWebRequest.Result.Success) {
-                Debug.LogError("Media Error: " + www.error + "\nResponse: " + www.downloadHandler.text);
-            } else {
-                Debug.Log("Request complete!");
-                TextResponse response = JsonUtility.FromJson<TextResponse>(www.downloadHandler.text);
-                if (response.candidates != null && response.candidates.Length > 0)
-                {
-                    Debug.Log("Media Response: " + response.candidates[0].content.parts[0].text);
-                }
-            }
-        }
         isRequesting = false;
     }
 }

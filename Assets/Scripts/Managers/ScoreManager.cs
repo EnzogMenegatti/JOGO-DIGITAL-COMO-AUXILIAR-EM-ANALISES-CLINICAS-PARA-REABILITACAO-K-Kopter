@@ -27,18 +27,28 @@ public class ScoreManager : MonoBehaviour
         AddScore(Mathf.RoundToInt(Time.deltaTime * 5f));
     }
 
-    private void OnEnable()
-    {
-        colliderTriggerScript.onCoinPickUp += Collider_onCoinPickup;//Toda vez que onCoinPickUp acontecer, triggara o método de mesmo nome
-        collisionScript.onLanded += Collision_onLanded;
-        LanderController.Instance.onStateChanged += Lander_onStateChanged;
+    private void Start()
+    {     
+        if (colliderTriggerScript != null) 
+            colliderTriggerScript.onCoinPickUp += Collider_onCoinPickup;
+            
+        if (collisionScript != null) 
+            collisionScript.onLanded += Collision_onLanded;
+            
+        if (LanderController.Instance != null) 
+            LanderController.Instance.onStateChanged += Lander_onStateChanged;
     }
 
-    private void OnDisable()
+    private void OnDestroy() 
     {
-        colliderTriggerScript.onCoinPickUp -= Collider_onCoinPickup;
-        collisionScript.onLanded -= Collision_onLanded;
-        LanderController.Instance.onStateChanged -= Lander_onStateChanged;
+        if (colliderTriggerScript != null) 
+            colliderTriggerScript.onCoinPickUp -= Collider_onCoinPickup;
+            
+        if (collisionScript != null) 
+            collisionScript.onLanded -= Collision_onLanded;
+            
+        if (LanderController.Instance != null) 
+            LanderController.Instance.onStateChanged -= Lander_onStateChanged;
     }
 
 
