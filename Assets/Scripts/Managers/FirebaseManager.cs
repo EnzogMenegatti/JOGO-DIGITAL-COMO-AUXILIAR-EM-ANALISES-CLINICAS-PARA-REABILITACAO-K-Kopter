@@ -120,6 +120,7 @@ public void SaveDataButton()
     StartCoroutine(UpdateAgeDatabase(int.Parse(pacientAge.text)));
     StartCoroutine(UpdateUserHeightDatabase(float.Parse(pacientHeight.text)));
     StartCoroutine(UpdateUserWeightDatabase(int.Parse(pacientWeight.text)));
+    StartCoroutine(UpdateUserNotes(pacientNotes.text));
 }
 
 
@@ -275,9 +276,9 @@ private IEnumerator Register(string _email, string _password, string _username)
     }
 }
 
-private IEnumerator UpdateUsernameAuth(string _username)
+private IEnumerator UpdateUsernameAuth(string _pacientname)
 {
-    UserProfile profile = new UserProfile { DisplayName = _username };
+    UserProfile profile = new UserProfile { DisplayName = _pacientname };
 
     var ProfileTask = User.UpdateUserProfileAsync(profile);
     yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
@@ -291,9 +292,9 @@ private IEnumerator UpdateUsernameAuth(string _username)
         UnityEngine.Debug.LogWarning(message: "Username Atualizado");
     }
 }
-    private IEnumerator UpdateUsernameDatabase(string _username) {
+    private IEnumerator UpdateUsernameDatabase(string _pacientname) {
     
-        var DBTask = DBreference.Child("users").Child(User.UserId).Child("username").SetValueAsync(_username);
+        var DBTask = DBreference.Child("users").Child(User.UserId).Child("pacient name").SetValueAsync(_pacientname);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
@@ -339,6 +340,21 @@ private IEnumerator UpdateUsernameAuth(string _username)
     private IEnumerator UpdateUserWeightDatabase(int _weight) {
     
         var DBTask = DBreference.Child("users").Child(User.UserId).Child("weight").SetValueAsync(_weight);
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            UnityEngine.Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+        }
+        else
+        {
+            UnityEngine.Debug.LogWarning(message: "Username no banco de dados Atualizado");
+        }
+    }
+    private IEnumerator UpdateUserNotes(string _notes) {
+    
+        var DBTask = DBreference.Child("users").Child(User.UserId).Child("pacientNotes:").SetValueAsync(_notes);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 

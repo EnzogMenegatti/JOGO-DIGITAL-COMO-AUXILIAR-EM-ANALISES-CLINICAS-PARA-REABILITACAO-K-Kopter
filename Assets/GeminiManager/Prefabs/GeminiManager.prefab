@@ -44,12 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78417bd5ae2625248a4a516c72971fa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsonApi: {fileID: 4900000, guid: 264db6452b3382c419bc2f4399b65c12, type: 3}
+  jsonApi: {fileID: 4900000, guid: 8c129f2a28e55514caa9ecd3c0db0358, type: 3}
   inputField: {fileID: 0}
   uiText: {fileID: 0}
+  botInstructions: 
   prompt: 
-  imagePrompt: 
-  skyboxMaterial: {fileID: 0}
   mediaFilePath: 
   mediaPrompt: 
-  mimeType: video/mp4
+  mimeType: 0
