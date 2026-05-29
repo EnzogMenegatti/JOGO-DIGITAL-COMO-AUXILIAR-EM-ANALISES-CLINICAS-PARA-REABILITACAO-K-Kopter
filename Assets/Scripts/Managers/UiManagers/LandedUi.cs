@@ -12,6 +12,8 @@ public class LandedUi : MonoBehaviour
 [SerializeField] private TextMeshProUGUI labelTextMesh;
 [SerializeField] private TextMeshProUGUI scoreTextMesh;
 [SerializeField] private UnityEngine.UI.Button RestartButton;
+[SerializeField] private UnityEngine.UI.Button MainMenuButton;
+[SerializeField] private UnityEngine.UI.Button ContinueButton;
 
 
     void Start()

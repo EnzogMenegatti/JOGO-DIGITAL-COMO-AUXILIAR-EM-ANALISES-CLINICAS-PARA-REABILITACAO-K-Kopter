@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject loginUI;
     [SerializeField] GameObject registerUI;
     [SerializeField] GameObject userDataUi;
+    [SerializeField] GameObject userDashboardUi;
 
     private void Awake()
     {
@@ -42,10 +43,19 @@ public class UIManager : MonoBehaviour
         registerUI.SetActive(false);
     }
 
+    public void UserDashboardScreen()
+    {
+        userDataUi.SetActive(false);
+        loginUI.SetActive(false);
+        registerUI.SetActive(false);
+        userDashboardUi.SetActive(true);
+    }
+
     public void CloseScreen()
     {
         loginUI.SetActive(false);
         registerUI.SetActive(false);
         userDataUi.SetActive(false);
+        userDashboardUi.SetActive(false);
     }
 }

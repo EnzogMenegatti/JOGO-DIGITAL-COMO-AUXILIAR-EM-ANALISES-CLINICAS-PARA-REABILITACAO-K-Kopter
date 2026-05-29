@@ -30,7 +30,7 @@ public class ScoreManager : MonoBehaviour
     private void Start()
     {     
         if (colliderTriggerScript != null) 
-            colliderTriggerScript.onCoinPickUp += Collider_onCoinPickup;
+            colliderTriggerScript.onPickUp += Collider_onPickup;
             
         if (collisionScript != null) 
             collisionScript.onLanded += Collision_onLanded;
@@ -42,7 +42,7 @@ public class ScoreManager : MonoBehaviour
     private void OnDestroy() 
     {
         if (colliderTriggerScript != null) 
-            colliderTriggerScript.onCoinPickUp -= Collider_onCoinPickup;
+            colliderTriggerScript.onPickUp -= Collider_onPickup;
             
         if (collisionScript != null) 
             collisionScript.onLanded -= Collision_onLanded;
@@ -56,7 +56,7 @@ public class ScoreManager : MonoBehaviour
         isTimeEnable = e.state == LanderController.PlayerState.Start;
     }
 
-    public void Collider_onCoinPickup(object sender, ColliderTriggerScript.OnCoinPickUpEventArgs e)//recebe os dois parametros do invocador de evento;
+    public void Collider_onPickup(object sender, ColliderTriggerScript.OnPickUpEventArgs e)//recebe os dois parametros do invocador de evento;
     {
         AddScore(e.coinValue);
         Debug.Log(e.coinValue);
@@ -73,6 +73,7 @@ public class ScoreManager : MonoBehaviour
     public void AddScore(int addScoreAmmount)
     {
         score += addScoreAmmount;
+        Debug.Log("Score: " + score);
     }
 
     public int ReturnScore()

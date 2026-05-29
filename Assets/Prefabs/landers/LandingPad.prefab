@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99e41c44b18c1dc4c8abe308d7351194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LandingPad
-  scoreMultiplier: 0
+  scoreMultiplier: 1
 --- !u!50 &8393261155392316126
 Rigidbody2D:
   serializedVersion: 5

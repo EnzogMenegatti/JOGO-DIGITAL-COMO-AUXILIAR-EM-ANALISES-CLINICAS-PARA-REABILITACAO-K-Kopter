@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1995638314685245224, guid: f15958a35144a8843aa5cd9cd08d7931, type: 3}
+      propertyPath: scoreMultiplier
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 3775991701448054768, guid: f15958a35144a8843aa5cd9cd08d7931, type: 3}
       propertyPath: m_Name
       value: LandingPad Variantx5
