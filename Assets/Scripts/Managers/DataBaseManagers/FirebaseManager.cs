@@ -46,6 +46,10 @@ public TMP_InputField scoreField;
 public GameObject scoreElement;
 public Transform scoreboardContent;
 
+[Header("Dashboard Settings")]
+public GameObject patientCardPrefab;
+public Transform cardsContainer;
+
 
 void Awake()
 {
@@ -118,6 +122,10 @@ public void SingOutButton()
     ClearRegisterField();
 }
 
+public void ExportPatientDataButton(string patientId)
+{
+    StartCoroutine(FetchPatientAndExport(patientId));
+}
 
 
 public void SaveDataButton()
@@ -138,10 +146,6 @@ public void SaveDataButton()
         pacientNotes.text
     ));
 }
-
-
-
-
 
 
 private IEnumerator Login(string _email, string _password)
@@ -207,8 +211,6 @@ private IEnumerator Login(string _email, string _password)
 
     yield return new WaitForSeconds(2);
     pacientName.text = "";
-
-    UIManager.instance.UserDataScreen();
 
     if (confirmLoginText != null) confirmLoginText.text = "Logged In";
 
@@ -346,7 +348,6 @@ private IEnumerator CreatePatient(string _patientname, string _sex, int _age, fl
 
     UnityEngine.Debug.LogWarning("JSON Gerado: " + json);
 
-    // 4. Salvar no banco (Consertei novamente a letra P maiúscula de Patients!)
     string uniquePatientId = DBreference.Child("users").Child(User.UserId).Child("patients").Push().Key;
     var DBTask = DBreference.Child("users").Child(User.UserId).Child("patients").Child(uniquePatientId).SetRawJsonValueAsync(json);
 
@@ -362,5 +363,109 @@ private IEnumerator CreatePatient(string _patientname, string _sex, int _age, fl
         ClearPatientFields();
         UIManager.instance.CloseScreen();
     }
+}
+
+private IEnumerator FetchPatientAndExport(string patientId)
+{
+    Task<DataSnapshot> DBTask = DBreference.Child("users").Child(User.UserId).Child("patients").Child(patientId).GetValueAsync();
+    PDFExportManager pdfExportManager = new PDFExportManager();
+    yield return new WaitUntil(() => DBTask.IsCompleted);
+
+    if (DBTask.Exception != null)
+    {
+        UnityEngine.Debug.LogWarning($"Erro ao buscar paciente: {DBTask.Exception}");
+        yield break;
+    }
+
+    DataSnapshot snapshot = DBTask.Result;
+
+    if (snapshot.Exists)
+    {
+        string json = snapshot.GetRawJsonValue();
+        PatientData patientToExport = JsonUtility.FromJson<PatientData>(json);
+
+        PDFExportManager.GeneratePatientReport(patientToExport);
+        PDFExportManager.GeneratePatientReport(patientToExport);
+    }
+    else
+    {
+        UnityEngine.Debug.LogWarning("Nenhum paciente encontrado com este ID.");
+    }
+}
+
+public void LoadDashboard()
+{
+    StartCoroutine(FetchAndDisplayPatients());
+}
+
+public IEnumerator FetchAndDisplayPatients()
+{
+    // --- O DETETIVE: Verificando quem está vazio antes de começar ---
+    if (cardsContainer == null)
+    {
+        UnityEngine.Debug.LogError("ERRO: O 'cardsContainer' está vazio! Volte na Unity e arraste o Content do ScrollView para o FirebaseManager.");
+        yield break; 
+    }
+
+    if (patientCardPrefab == null)
+    {
+        UnityEngine.Debug.LogError("ERRO: O 'patientCardPrefab' está vazio! Arraste o seu Prefab azul para o FirebaseManager na Unity.");
+        yield break;
+    }
+
+    if (User == null)
+    {
+        UnityEngine.Debug.LogError("ERRO: O objeto 'User' está vazio! Você tentou abrir o Dashboard sem fazer login antes.");
+        yield break; 
+    }
+
+    if (DBreference == null)
+    {
+        UnityEngine.Debug.LogError("ERRO: 'DBreference' está vazio! O banco de dados não conectou.");
+        yield break; 
+    }
+    // ----------------------------------------------------------------
+
+    // 1. Limpa o painel com segurança
+    foreach (Transform child in cardsContainer)
+    {
+        Destroy(child.gameObject);
+    }
+
+    // 2. Busca os dados
+    var DBTask = DBreference.Child("users").Child(User.UserId).Child("patients").GetValueAsync();
+
+    yield return new WaitUntil(() => DBTask.IsCompleted);
+
+    if (DBTask.Exception != null)
+    {
+        UnityEngine.Debug.LogError($"Erro ao baixar pacientes: {DBTask.Exception}");
+        yield break;
+    }
+
+    DataSnapshot snapshot = DBTask.Result;
+
+    if (!snapshot.Exists)
+    {
+        UnityEngine.Debug.LogWarning("Nenhum paciente encontrado para este médico.");
+        yield break;
+    }
+
+    // 3. Monta os cards
+    foreach (DataSnapshot patientRecord in snapshot.Children)
+    {
+        string jsonText = patientRecord.GetRawJsonValue();
+        PatientData loadedData = JsonUtility.FromJson<PatientData>(jsonText);
+
+        GameObject newCard = Instantiate(patientCardPrefab, cardsContainer);
+
+        PatientCardUI cardScript = newCard.GetComponent<PatientCardUI>();
+        if (cardScript != null)
+        {
+            cardScript.SetupCard(loadedData);
+        }
+    }
+
+    UnityEngine.Debug.Log("Dashboard carregado com sucesso!");
 }
 }

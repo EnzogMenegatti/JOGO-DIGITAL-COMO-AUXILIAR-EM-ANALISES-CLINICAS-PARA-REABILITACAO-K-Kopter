@@ -3441,7 +3441,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1657633277
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3484,6 +3484,8 @@ MonoBehaviour:
   labelTextMesh: {fileID: 800154024}
   scoreTextMesh: {fileID: 226605010}
   RestartButton: {fileID: 495264042}
+  MainMenuButton: {fileID: 0}
+  ContinueButton: {fileID: 0}
 --- !u!1 &1678479926
 GameObject:
   m_ObjectHideFlags: 0

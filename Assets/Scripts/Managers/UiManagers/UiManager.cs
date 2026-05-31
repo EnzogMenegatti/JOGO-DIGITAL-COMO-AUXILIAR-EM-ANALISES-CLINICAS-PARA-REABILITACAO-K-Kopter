@@ -5,8 +5,8 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
+    [SerializeField] private FirebaseManager firebaseManager;
 
-    //Screen object variables
     [SerializeField] GameObject loginUI;
     [SerializeField] GameObject registerUI;
     [SerializeField] GameObject userDataUi;
@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
         }
         else if (instance != null)
         {
-            Debug.Log("Instancia já existe, destruindo objeto!");
+            Debug.Log("Instancia já existe");
             Destroy(this);
         }
     }
@@ -49,6 +49,17 @@ public class UIManager : MonoBehaviour
         loginUI.SetActive(false);
         registerUI.SetActive(false);
         userDashboardUi.SetActive(true);
+        if(firebaseManager != null)
+        {
+            Debug.Log("Iniciando fetch dos pacientes para o dashboard");
+            StartCoroutine(firebaseManager.FetchAndDisplayPatients());
+        }
+        else
+        {
+            Debug.LogError("FirebaseManager não está atribuído no UIManager!");
+        }
+        
+
     }
 
     public void CloseScreen()
@@ -58,4 +69,6 @@ public class UIManager : MonoBehaviour
         userDataUi.SetActive(false);
         userDashboardUi.SetActive(false);
     }
+
+
 }
