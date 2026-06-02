@@ -96,19 +96,6 @@ public class UnityAndGeminiV3 : MonoBehaviour
     [Header("Prompt Function")]
     public string prompt = "";
 
-    [Header("Media Prompt Function")]
-    public string mediaFilePath = "";
-    public string mediaPrompt = "";
-    public enum MediaType
-    {
-        Video_MP4 = 0,
-        Audio_MP3 = 1,
-        PDF = 2,
-        JPG = 3,
-        PNG = 4
-    }
-    public MediaType mimeType = MediaType.Video_MP4;
-
     // Protection against HTTP 429 (Too Many Requests)
     private bool isRequesting = false;
 

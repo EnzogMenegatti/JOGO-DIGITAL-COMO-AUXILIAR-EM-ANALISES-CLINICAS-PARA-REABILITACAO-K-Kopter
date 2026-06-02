@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject registerUI;
     [SerializeField] GameObject userDataUi;
     [SerializeField] GameObject userDashboardUi;
+    [SerializeField] GameObject helpBotUi;
 
     private void Awake()
     {
@@ -62,12 +63,18 @@ public class UIManager : MonoBehaviour
 
     }
 
+    public void HelpBotScreen()
+    {
+        helpBotUi.SetActive(true);
+    }
+
     public void CloseScreen()
     {
         loginUI.SetActive(false);
         registerUI.SetActive(false);
         userDataUi.SetActive(false);
         userDashboardUi.SetActive(false);
+        helpBotUi.SetActive(false);
     }
 
 

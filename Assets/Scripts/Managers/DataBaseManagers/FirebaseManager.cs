@@ -49,6 +49,7 @@ public Transform scoreboardContent;
 [Header("Dashboard Settings")]
 public GameObject patientCardPrefab;
 public Transform cardsContainer;
+public static string selectedPatientId;
 
 
 void Awake()
@@ -127,6 +128,10 @@ public void ExportPatientDataButton(string patientId)
     StartCoroutine(FetchPatientAndExport(patientId));
 }
 
+public void SaveGameScore(int score, string phaseName)
+{
+    StartCoroutine(SaveScoreCoroutine(score, phaseName));
+}
 
 public void SaveDataButton()
 {
@@ -467,5 +472,40 @@ public IEnumerator FetchAndDisplayPatients()
     }
 
     UnityEngine.Debug.Log("Dashboard carregado com sucesso!");
+}
+
+private IEnumerator SaveScoreCoroutine(int score, string phaseName)
+{
+    // Verificação de segurança: O jogo tentou salvar o score, mas nenhum paciente foi selecionado?
+    if (string.IsNullOrEmpty(selectedPatientId))
+    {
+        UnityEngine.Debug.LogError("Não foi possível salvar o score: Nenhum paciente selecionado!");
+        yield break;
+    }
+
+    // 1. Monta a mochila com os dados do desempenho
+    ScoreData newScore = new ScoreData(score, phaseName);
+    string json = JsonUtility.ToJson(newScore);
+
+    // 2. Caminho do Banco: users -> id_medico -> patients -> id_paciente_selecionado -> scores -> id_unico_do_score
+    // Usamos o .Push() aqui para que cada partida seja salva como um novo item no histórico, sem apagar as anteriores!
+    string uniqueScoreId = DBreference.Child("users").Child(User.UserId)
+                                      .Child("patients").Child(selectedPatientId)
+                                      .Child("scores").Push().Key;
+
+    var DBTask = DBreference.Child("users").Child(User.UserId)
+                            .Child("patients").Child(selectedPatientId)
+                            .Child("scores").Child(uniqueScoreId).SetRawJsonValueAsync(json);
+
+    yield return new WaitUntil(() => DBTask.IsCompleted);
+
+    if (DBTask.Exception != null)
+    {
+        UnityEngine.Debug.LogError($"Falha ao salvar pontuação: {DBTask.Exception}");
+    }
+    else
+    {
+        UnityEngine.Debug.Log($"Score de {score} pontos salvo com sucesso para o paciente atual!");
+    }
 }
 }
