@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.IO.Ports;
+using TMPro;
 
 using System.IO;
 public class ArduinoManeger : MonoBehaviour
 {
     public static ArduinoManeger instance;
+    public TMP_InputField Porta_COM_editavel;
 
     public static string Ard = "COM10"; //Notebook: COM7; PC Lab: 
     public Text Porta_COM;
@@ -94,7 +96,7 @@ public class ArduinoManeger : MonoBehaviour
 
     public void ConectarArd()
     {
-        Ard = Porta_COM.text;
+        Ard = Porta_COM_editavel.text;
         porta = new SerialPort(Ard, 115200);
 
         porta.Open();
@@ -107,9 +109,6 @@ public class ArduinoManeger : MonoBehaviour
             ArdCon = true;
             porta.WriteLine("c");
         }
-
-        
-       
     }
 
     public void FecharArd()
