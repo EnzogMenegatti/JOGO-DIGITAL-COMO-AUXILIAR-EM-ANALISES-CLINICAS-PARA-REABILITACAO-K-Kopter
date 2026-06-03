@@ -133,6 +133,27 @@ public void SaveGameScore(int score, string phaseName)
     StartCoroutine(SaveScoreCoroutine(score, phaseName));
 }
 
+public void LoadDashboard()
+{
+    StartCoroutine(FetchAndDisplayPatients());
+}
+
+public void ChangePasswordButton(string newPassword)
+{
+    StartCoroutine(UpdatePasswordCoroutine(newPassword));
+}
+
+public void ResetPasswordButton(string emailAddress)
+{
+    if (string.IsNullOrEmpty(emailAddress))
+    {
+        warningLoginText.text = "Digite seu e-mail para recuperar a senha.";
+        return;
+    }
+
+    StartCoroutine(SendPasswordResetEmail(emailAddress));
+}
+
 public void SaveDataButton()
 {
     if (string.IsNullOrEmpty(pacientAge.text) || string.IsNullOrEmpty(pacientHeight.text) || string.IsNullOrEmpty(pacientWeight.text))
@@ -152,11 +173,9 @@ public void SaveDataButton()
     ));
 }
 
-
 private IEnumerator Login(string _email, string _password)
 {
     Task<AuthResult> LoginTask = auth.SignInWithEmailAndPasswordAsync(_email, _password);
-
     yield return new WaitUntil(predicate: () => LoginTask.IsCompleted);
 
     if (LoginTask.IsCanceled)
@@ -204,32 +223,35 @@ private IEnumerator Login(string _email, string _password)
     
     {
     if (LoginTask.Result != null && LoginTask.Result.User != null)
-{
+    {
     User = LoginTask.Result.User;
+    if (User.IsEmailVerified){
     UnityEngine.Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
         
     if (warningLoginText != null) warningLoginText.text = "";
 
     if (confirmLoginText != null) confirmLoginText.text = "Logged In";
-
-
-
+    
     yield return new WaitForSeconds(2);
     pacientName.text = "";
 
     if (confirmLoginText != null) confirmLoginText.text = "Logged In";
 
     ClearLoginField();
-
     ClearRegisterField();
-
-
-}
+    }
 else
 {
-    UnityEngine.Debug.LogError("Login successful but User object is null!");
+    UnityEngine.Debug.LogWarning("Login negado: E-mail não verificado.");
+        
+        if (warningLoginText != null) 
+        warningLoginText.text = "Por favor, valide seu e-mail antes de entrar.";
+        if (loginButton != null) 
+        loginButton.interactable = true;
+        auth.SignOut();
 }
-    }
+}
+}
 }
 
 private IEnumerator Register(string _email, string _password, string _username)
@@ -279,7 +301,7 @@ private IEnumerator Register(string _email, string _password, string _username)
         {
             if (registerButton != null) registerButton.interactable = true;
 
-            warningLoginText.text = "Cadastro Cancelado (Verifique a conexão).";
+            warningRegisterText.text = "Cadastro Cancelado (Verifique a conexão).";
             yield break;
         }
 
@@ -295,16 +317,16 @@ private IEnumerator Register(string _email, string _password, string _username)
             switch (errorCode)
             {
                 case AuthError.MissingEmail:
-                    message = "Missing Email";
+                    message = "Email em falta";
                     break;
                 case AuthError.MissingPassword:
-                    message = "Missing Password";
+                    message = "Senha em falta";
                     break;
                 case AuthError.WeakPassword:
-                    message = "Weak Password";
+                    message = "Senha fraca";
                     break;
                 case AuthError.EmailAlreadyInUse:
-                    message = "Email Already In Use";
+                    message = "Email já em uso";
                     break;
             }
             if (registerButton != null) registerButton.interactable = true;
@@ -313,30 +335,40 @@ private IEnumerator Register(string _email, string _password, string _username)
         }
         else
         {
-            User = RegisterTask.Result.User;
-
             if (User != null)
             {
                 UserProfile profile = new UserProfile{DisplayName = _username};
-
-                    
+            
                 Task ProfileTask = User.UpdateUserProfileAsync(profile);
 
                 yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
 
                 if (ProfileTask.Exception != null)
                 {
-                    UnityEngine.Debug.LogWarning(message: $"Failed to register task with {ProfileTask.Exception}");
+                    UnityEngine.Debug.LogWarning(message: $"Falha ao registrar tarefa: {ProfileTask.Exception}");
                     FirebaseException firebaseEx = ProfileTask.Exception.GetBaseException() as FirebaseException;
                     AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
-                    warningRegisterText.text = "Username Set Failed!";
+                    warningRegisterText.text = "Registro de nome de usuário falhou!";
+                }
+
+                User = RegisterTask.Result.User;
+
+                Task emailVerificationTask = User.SendEmailVerificationAsync();
+
+                yield return new WaitUntil(() => emailVerificationTask.IsCompleted);
+                
+                if (emailVerificationTask.Exception != null)
+                {
+                    UnityEngine.Debug.LogWarning($"Falha ao enviar e-mail: {emailVerificationTask.Exception}");
+                    warningRegisterText.text = "Erro ao enviar e-mail de verificação.";
                 }
                 else
                 {
                     UIManager.instance.LoginScreen();
-                    confirmRegisterText.text = "Cadastro Bem sucedido";
+                    confirmRegisterText.text = "Cadastro concluído! Verifique seu e-mail para ativar a conta.";
                     ClearLoginField();
                     ClearRegisterField();
+                    auth.SignOut();
                 }
             }
         }
@@ -398,11 +430,6 @@ private IEnumerator FetchPatientAndExport(string patientId)
     }
 }
 
-public void LoadDashboard()
-{
-    StartCoroutine(FetchAndDisplayPatients());
-}
-
 public IEnumerator FetchAndDisplayPatients()
 {
     // --- O DETETIVE: Verificando quem está vazio antes de começar ---
@@ -429,15 +456,12 @@ public IEnumerator FetchAndDisplayPatients()
         UnityEngine.Debug.LogError("ERRO: 'DBreference' está vazio! O banco de dados não conectou.");
         yield break; 
     }
-    // ----------------------------------------------------------------
 
-    // 1. Limpa o painel com segurança
     foreach (Transform child in cardsContainer)
     {
         Destroy(child.gameObject);
     }
 
-    // 2. Busca os dados
     var DBTask = DBreference.Child("users").Child(User.UserId).Child("patients").GetValueAsync();
 
     yield return new WaitUntil(() => DBTask.IsCompleted);
@@ -456,7 +480,6 @@ public IEnumerator FetchAndDisplayPatients()
         yield break;
     }
 
-    // 3. Monta os cards
     foreach (DataSnapshot patientRecord in snapshot.Children)
     {
         string jsonText = patientRecord.GetRawJsonValue();
@@ -507,5 +530,61 @@ private IEnumerator SaveScoreCoroutine(int score, string phaseName)
     {
         UnityEngine.Debug.Log($"Score de {score} pontos salvo com sucesso para o paciente atual!");
     }
+}
+
+private IEnumerator UpdatePasswordCoroutine(string newPassword)
+{
+    if (User == null)
+    {
+        UnityEngine.Debug.LogWarning("Erro: Nenhum usuário logado para trocar a senha.");
+        yield break;
+    }
+
+    // Nota: UpdatePasswordAsync retorna apenas Task, e não Task<AuthResult>
+    Task updateTask = User.UpdatePasswordAsync(newPassword);
+
+    yield return new WaitUntil(() => updateTask.IsCompleted);
+
+    if (updateTask.IsCanceled)
+    {
+        UnityEngine.Debug.LogWarning("Troca de senha cancelada.");
+        yield break;
+    }
+
+    if (updateTask.IsFaulted)
+    {
+        UnityEngine.Debug.LogError($"Falha ao trocar a senha: {updateTask.Exception}");
+        
+        // Você pode colocar um texto na UI para avisar o usuário do erro
+        // warningSettingsText.text = "Erro ao alterar a senha. Tente deslogar e logar novamente.";
+        
+        yield break;
+    }
+
+    UnityEngine.Debug.Log("Senha alterada com sucesso!");
+    // confirmSettingsText.text = "Senha atualizada com sucesso!";
+}
+
+private IEnumerator SendPasswordResetEmail(string email)
+{
+    Task resetTask = auth.SendPasswordResetEmailAsync(email);
+
+    yield return new WaitUntil(() => resetTask.IsCompleted);
+
+    if (resetTask.IsCanceled)
+    {
+        UnityEngine.Debug.LogWarning("Recuperação de senha cancelada.");
+        yield break;
+    }
+
+    if (resetTask.IsFaulted)
+    {
+        UnityEngine.Debug.LogError($"Erro ao enviar e-mail de recuperação: {resetTask.Exception}");
+        warningLoginText.text = "Erro ao enviar e-mail. Verifique o endereço digitado.";
+        yield break;
+    }
+
+    UnityEngine.Debug.Log("E-mail de recuperação enviado com sucesso!");
+    confirmLoginText.text = "E-mail de recuperação enviado! Verifique sua caixa de entrada.";
 }
 }
