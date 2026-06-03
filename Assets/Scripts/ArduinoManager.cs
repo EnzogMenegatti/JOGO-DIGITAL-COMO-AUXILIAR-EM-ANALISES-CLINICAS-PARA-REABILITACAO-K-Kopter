@@ -92,6 +92,8 @@ public class ArduinoManeger : MonoBehaviour
 
         }
 
+        Debug.Log($"{X} | {Y} | {Z}");
+
     }
 
     public void ConectarArd()

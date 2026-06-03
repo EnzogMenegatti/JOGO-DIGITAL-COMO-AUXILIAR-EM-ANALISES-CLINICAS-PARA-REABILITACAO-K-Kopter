@@ -17,9 +17,9 @@ public class LanderController : MonoBehaviour
     [SerializeField] private ManagerAPI managerAPI;
     [SerializeField] private ArduinoManeger arduinoManager;
     [SerializeField] private float facing;
-    [SerializeField] private float deadZoneX;
-    [SerializeField] private float deadZoneY;
-    
+    [SerializeField] private float deadZoneX = 0.1f;
+    [SerializeField] private float deadZoneY = 0.1f;
+
     public event EventHandler onUpForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
     public event EventHandler onLeftForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento segruo
     public event EventHandler onRightForce;//Cria uma variavel de evento. Eventos são usados para comunicar com partes desacopladas, mantendo um encapsulamento seguro
