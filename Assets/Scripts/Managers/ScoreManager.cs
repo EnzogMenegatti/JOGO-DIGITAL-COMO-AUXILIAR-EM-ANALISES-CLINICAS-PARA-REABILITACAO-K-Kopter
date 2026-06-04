@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {   
@@ -84,5 +85,20 @@ public class ScoreManager : MonoBehaviour
     public float ReturnTime()
     {
         return time;
-    } 
+    }
+
+    public void FinalizarPartida(int pontuacaoFinal)
+    {
+        // 2. Captura o nome exato da cena que está aberta agora
+        string idDaFase = SceneManager.GetActiveScene().name;
+
+        Debug.Log($"Partida finalizada na cena: {idDaFase}. Salvando score...");
+
+        // 3. Procura o FirebaseManager e envia o score usando o nome da cena como ID
+        FirebaseManager firebase = Object.FindFirstObjectByType<FirebaseManager>();
+        if (firebase != null)
+        {
+            firebase.SaveGameScore(pontuacaoFinal, idDaFase);
+        }
+    }
 }

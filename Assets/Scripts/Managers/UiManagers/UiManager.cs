@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject userDashboardUi;
     [SerializeField] GameObject helpBotUi;
     [SerializeField] GameObject OptionsUi;
+    [SerializeField] GameObject levelSelector;
+    [SerializeField] GameObject gameMenu;
 
     private void Awake()
     {
@@ -64,6 +66,21 @@ public class UIManager : MonoBehaviour
 
     }
 
+    /*public void LevelSelectorScreen()
+    {
+        levelSelector.SetActive(true);
+    }*/
+
+    public void OpenLevelSelectionForPatient(string patientId)
+    {
+        FirebaseManager.selectedPatientId = patientId;
+        
+        UnityEngine.Debug.Log($"Paciente {patientId} selecionado. Abrindo seleção de fases...");
+
+        CloseScreen();
+        levelSelector.SetActive(true);
+    }
+
     public void HelpBotScreen()
     {
         helpBotUi.SetActive(true);
@@ -74,6 +91,12 @@ public class UIManager : MonoBehaviour
         OptionsUi.SetActive(true);
     }
 
+    public void GameMenuScreen()
+    {
+        gameMenu.SetActive(true);
+    }
+
+
     public void CloseScreen()
     {
         loginUI.SetActive(false);
@@ -82,6 +105,8 @@ public class UIManager : MonoBehaviour
         userDashboardUi.SetActive(false);
         helpBotUi.SetActive(false);
         OptionsUi.SetActive(false);
+        levelSelector.SetActive(false);
+        gameMenu.SetActive(false);
     }
 
 
