@@ -5,15 +5,15 @@ public class PatientData
 {
     public string patientName;
     public string doctorName;
-    public int patientAge;
-    public float patientHeight;
-    public float patientWeight;
+    public string patientAge;
+    public string patientHeight;
+    public string patientWeight;
     public string patientNotes;
     public string patientSex;
 
     public PatientData() { }
 
-    public PatientData(string _doctorName, string _patientName, string _patientSex, int _patientAge, float _patientHeight, float _patientWeight, string _patientNotes)
+    public PatientData(string _doctorName, string _patientName, string _patientSex, string _patientAge, string _patientHeight, string _patientWeight, string _patientNotes)
     {
         doctorName = _doctorName;
         patientName = _patientName;

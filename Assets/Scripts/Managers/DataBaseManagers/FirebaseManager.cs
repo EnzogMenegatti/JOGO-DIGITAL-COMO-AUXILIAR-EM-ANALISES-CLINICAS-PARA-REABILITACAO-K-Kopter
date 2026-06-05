@@ -166,9 +166,9 @@ public void SaveDataButton()
     StartCoroutine(CreatePatient(
         pacientName.text, 
         pacientSex.options[pacientSex.value].text,
-        int.Parse(pacientAge.text), 
-        float.Parse(pacientHeight.text), 
-        float.Parse(pacientWeight.text), 
+        pacientAge.text, 
+        pacientHeight.text, 
+        pacientWeight.text, 
         pacientNotes.text
     ));
 }
@@ -189,7 +189,7 @@ private IEnumerator Login(string _email, string _password)
 
     if (LoginTask.IsFaulted)
     {
-        UnityEngine.Debug.LogWarning(message: $"Failed to register task with {LoginTask.Exception}");
+        UnityEngine.Debug.LogWarning(message: $"Falha ao conectar usuario: {LoginTask.Exception}");
 
         FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
 
@@ -199,19 +199,19 @@ private IEnumerator Login(string _email, string _password)
         switch (errorCode)
         {
             case AuthError.MissingEmail:
-                message = "Missing Email";
+                message = "Email em falta";
                 break;
             case AuthError.MissingPassword:
-                message = "Missing Password";
+                message = "Senha em falta";
                 break;
             case AuthError.WrongPassword:
-                message = "Wrong Password";
+                message = "Senha incorreta";
                 break;
             case AuthError.InvalidEmail:
-                message = "Invalid Email";
+                message = "Email inválido";
                 break;
             case AuthError.UserNotFound:
-                message = "Account does not exist";
+                message = "Conta não existe";
                 break;
         }
         if (loginButton != null) loginButton.interactable = true;
@@ -226,7 +226,7 @@ private IEnumerator Login(string _email, string _password)
     {
     User = LoginTask.Result.User;
     if (User.IsEmailVerified){
-    UnityEngine.Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
+    UnityEngine.Debug.LogFormat("Usuario conectado: {0} ({1})", User.DisplayName, User.Email);
         
     if (warningLoginText != null) warningLoginText.text = "";
 
@@ -240,23 +240,22 @@ private IEnumerator Login(string _email, string _password)
     ClearLoginField();
     ClearRegisterField();
     }
-else
-{
-    UnityEngine.Debug.LogWarning("Login negado: E-mail não verificado.");
-        
-        if (warningLoginText != null) 
-        warningLoginText.text = "Por favor, valide seu e-mail antes de entrar.";
-        if (loginButton != null) 
-        loginButton.interactable = true;
-        auth.SignOut();
-}
-}
-}
+    else
+    {
+        UnityEngine.Debug.LogWarning("Login negado: E-mail não verificado.");
+            
+            if (warningLoginText != null) 
+            warningLoginText.text = "Por favor, valide seu e-mail antes de entrar.";
+            if (loginButton != null) 
+            loginButton.interactable = true;
+            auth.SignOut();
+    }
+    }
+    }
 }
 
 private IEnumerator Register(string _email, string _password, string _username)
 {
-
     DatabaseReference dbreference = FirebaseDatabase.DefaultInstance.RootReference;
 
     Query usernameQuery = dbreference.Child("users").OrderByChild("username").EqualTo(_username);
@@ -268,26 +267,22 @@ private IEnumerator Register(string _email, string _password, string _username)
     if (checkUsernameTask.IsFaulted)
     {
         UnityEngine.Debug.LogError("Falha de conexão");
-
         warningRegisterText.text = "Erro de conexão";
-
         yield break;
     }
+
     DataSnapshot usernameSnapshot = checkUsernameTask.Result;
     if (usernameSnapshot.Exists)
     {
         warningRegisterText.text = "Nome de usuário já existe";
-
         yield break;
     }
     else if (_username == "")
     {
         warningRegisterText.text = "Nome de usúario faltando";
-
         yield break;
     }
-    
-    else if(passwordRegisterField.text != passwordRegisterVerifyField.text)
+    else if (passwordRegisterField.text != passwordRegisterVerifyField.text)
     {
         warningRegisterText.text = "Senhas não coencidem";
     }
@@ -300,20 +295,18 @@ private IEnumerator Register(string _email, string _password, string _username)
         if (RegisterTask.IsCanceled)
         {
             if (registerButton != null) registerButton.interactable = true;
-
             warningRegisterText.text = "Cadastro Cancelado (Verifique a conexão).";
             yield break;
         }
 
         if (RegisterTask.IsFaulted)
         {
-            UnityEngine.Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
+            UnityEngine.Debug.LogWarning(message: $"Erro ao cadastrar. Erro: {RegisterTask.Exception}");
 
             FirebaseException firebaseEx = RegisterTask.Exception.GetBaseException() as FirebaseException;
-
             AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
 
-            string message = "Register Failed!";
+            string message = "Falha no cadastro!";
             switch (errorCode)
             {
                 case AuthError.MissingEmail:
@@ -330,14 +323,16 @@ private IEnumerator Register(string _email, string _password, string _username)
                     break;
             }
             if (registerButton != null) registerButton.interactable = true;
-
             warningRegisterText.text = message;
         }
         else
         {
+            // CORREÇÃO 1: Atribuição da variável User antes da verificação condicional
+            User = RegisterTask.Result.User;
+
             if (User != null)
             {
-                UserProfile profile = new UserProfile{DisplayName = _username};
+                UserProfile profile = new UserProfile { DisplayName = _username };
             
                 Task ProfileTask = User.UpdateUserProfileAsync(profile);
 
@@ -351,21 +346,20 @@ private IEnumerator Register(string _email, string _password, string _username)
                     warningRegisterText.text = "Registro de nome de usuário falhou!";
                 }
 
-                User = RegisterTask.Result.User;
+                // CORREÇÃO 2: Execução única da tarefa de envio do e-mail de verificação
+                Task emailTask = User.SendEmailVerificationAsync();
 
-                Task emailVerificationTask = User.SendEmailVerificationAsync();
-
-                yield return new WaitUntil(() => emailVerificationTask.IsCompleted);
+                yield return new WaitUntil(() => emailTask.IsCompleted);
                 
-                if (emailVerificationTask.Exception != null)
+                if (emailTask.Exception != null)
                 {
-                    UnityEngine.Debug.LogWarning($"Falha ao enviar e-mail: {emailVerificationTask.Exception}");
+                    UnityEngine.Debug.LogWarning($"Falha ao enviar e-mail: {emailTask.Exception}");
                     warningRegisterText.text = "Erro ao enviar e-mail de verificação.";
                 }
                 else
                 {
-                    UIManager.instance.LoginScreen();
                     confirmRegisterText.text = "Cadastro concluído! Verifique seu e-mail para ativar a conta.";
+                    UIManager.instance.LoginScreen();
                     ClearLoginField();
                     ClearRegisterField();
                     auth.SignOut();
@@ -375,7 +369,7 @@ private IEnumerator Register(string _email, string _password, string _username)
     }
 }
 
-private IEnumerator CreatePatient(string _patientname, string _sex, int _age, float _height, float _weight, string _notes) 
+private IEnumerator CreatePatient(string _patientname, string _sex, string _age, string _height, string _weight, string _notes) 
 {
     string currentDoctorName = FirebaseAuth.DefaultInstance.CurrentUser.DisplayName;
     

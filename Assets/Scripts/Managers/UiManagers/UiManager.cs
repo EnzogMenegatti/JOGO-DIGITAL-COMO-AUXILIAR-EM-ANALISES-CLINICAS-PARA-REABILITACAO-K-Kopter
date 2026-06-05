@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] GameObject loginUI;
     [SerializeField] GameObject registerUI;
+    [SerializeField] GameObject accountUI;
     [SerializeField] GameObject userDataUi;
     [SerializeField] GameObject userDashboardUi;
     [SerializeField] GameObject helpBotUi;
@@ -39,6 +40,12 @@ public class UIManager : MonoBehaviour
         loginUI.SetActive(false);
         registerUI.SetActive(true);
     }
+    public void AccountScreen()
+    {
+        accountUI.SetActive(true);
+        loginUI.SetActive(true);
+        registerUI.SetActive(false);
+    }
 
     public void UserDataScreen()
     {
@@ -66,18 +73,10 @@ public class UIManager : MonoBehaviour
 
     }
 
-    /*public void LevelSelectorScreen()
-    {
-        levelSelector.SetActive(true);
-    }*/
-
     public void OpenLevelSelectionForPatient(string patientId)
     {
         FirebaseManager.selectedPatientId = patientId;
-        
         UnityEngine.Debug.Log($"Paciente {patientId} selecionado. Abrindo seleção de fases...");
-
-        CloseScreen();
         levelSelector.SetActive(true);
     }
 
@@ -107,6 +106,7 @@ public class UIManager : MonoBehaviour
         OptionsUi.SetActive(false);
         levelSelector.SetActive(false);
         gameMenu.SetActive(false);
+        accountUI.SetActive(false);
     }
 
 
